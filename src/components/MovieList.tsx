@@ -12,7 +12,8 @@ interface MovieListContextType {
 const MovieListContext = createContext<MovieListContextType>({});
 
 interface MovieListProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  movies?: Movie[];
   onAddToFavorites?: (movie: Movie) => void;
   onRemoveFromFavorites?: (movieId: number) => void;
   favorites?: Movie[];
@@ -21,6 +22,7 @@ interface MovieListProps {
 
 const MovieList = ({
   children,
+  movies = [],
   onAddToFavorites,
   onRemoveFromFavorites,
   favorites = [],
@@ -29,6 +31,9 @@ const MovieList = ({
   return (
     <MovieListContext.Provider value={{ onAddToFavorites, onRemoveFromFavorites, favorites, disableButtons }}>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {movies.map(movie => (
+          <MovieItem key={movie.id} movie={movie} />
+        ))}
         {children}
       </div>
     </MovieListContext.Provider>
