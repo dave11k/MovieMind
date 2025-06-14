@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import '../src/index.css'
-import { AuthProvider } from '@/contexts/AuthContext'
+import '@/index.css'
+import { ClientAuthProvider } from '@/components/ClientAuthProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'MovieMind',
-  description: 'Your movie companion',
+  title: 'MovieMind - AI-Powered Movie Recommendations',
+  description: 'Discover your next favorite movie with AI-powered recommendations',
 }
 
 export default function RootLayout({
@@ -18,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <ClientAuthProvider>
+          {children}
+        </ClientAuthProvider>
       </body>
     </html>
   )

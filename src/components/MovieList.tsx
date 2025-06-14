@@ -57,11 +57,13 @@ const MovieItem = ({ movie }: MovieItemProps) => {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="absolute top-2 right-2 bg-black/70 rounded-full px-2 py-1 flex items-center">
-          <span className="text-xs font-medium">
-            {movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}
-          </span>
-        </div>
+        {!isNaN(movie.vote_average) && movie.vote_average > 0 && (
+          <div className="absolute top-2 right-2 bg-black/70 rounded-full px-2 py-1 flex items-center">
+            <span className="text-xs font-medium">
+              {movie.vote_average.toFixed(1)}
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-4 flex flex-col h-[200px]">
         <h3 className="font-bold text-lg mb-1 truncate">{movie.title}</h3>

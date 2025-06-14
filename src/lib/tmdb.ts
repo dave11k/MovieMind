@@ -49,11 +49,28 @@ class TMDBService {
       return this.makeRequest('/discover/movie', filters);
     }
   
-    async getUpcomingMovies(year: number = 2025) {
-      return this.discoverMovies({
-        primary_release_year: year,
-        sort_by: 'release_date.asc'
-      });
+    async getUpcomingMovies() {
+      const currentYear = new Date().getFullYear();
+      const nextYear = currentYear + 1;
+      
+      // Fetch movies for current year and next year
+      const [currentYearMovies, nextYearMovies] = await Promise.all([
+        this.discoverMovies({
+          primary_release_year: currentYear,
+          sort_by: 'release_date.asc',
+          'release_date.gte': new Date().toISOString().split('T')[0] // Only future dates
+        }),
+        this.discoverMovies({
+          primary_release_year: nextYear,
+          sort_by: 'release_date.asc'
+        })
+      ]);
+
+      // Combine and sort results
+      return {
+        results: [...currentYearMovies.results, ...nextYearMovies.results]
+          .sort((a, b) => new Date(a.release_date).getTime() - new Date(b.release_date).getTime())
+      };
     }
   
     async getPopularMovies(page: number = 1) {

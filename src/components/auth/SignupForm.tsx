@@ -39,7 +39,7 @@ export function SignupForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="bg-gray-800 rounded-lg p-8 shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Create Account</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center text-white">Create Account</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

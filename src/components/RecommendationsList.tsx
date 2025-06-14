@@ -21,11 +21,18 @@ export const RecommendationsList = ({
       <p className="text-gray-400 text-sm mb-4">
         Based on your favorites, we think you'll enjoy these upcoming releases
       </p>
-      <MovieList favorites={favorites} disableButtons={true}>
-        {recommendations.map(movie => (
-          <MovieList.Item key={movie.id} movie={movie} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {recommendations.map((movie, index) => (
+          <div key={`${movie.id}-${index}`} className="bg-gray-800 rounded-lg overflow-hidden">
+            <MovieList.Item movie={movie} />
+            {'explanation' in movie && (
+              <div className="p-4">
+                <p className="text-sm text-gray-300">{movie.explanation}</p>
+              </div>
+            )}
+          </div>
         ))}
-      </MovieList>
+      </div>
     </section>
   );
 };
