@@ -28,13 +28,23 @@ const MovieList = ({
   favorites = [],
   disableButtons = false
 }: MovieListProps) => {
+  const contextValue = {
+    onAddToFavorites,
+    onRemoveFromFavorites,
+    favorites,
+    disableButtons
+  };
+
   return (
-    <MovieListContext.Provider value={{ onAddToFavorites, onRemoveFromFavorites, favorites, disableButtons }}>
+    <MovieListContext.Provider value={contextValue}>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {movies.map(movie => (
-          <MovieItem key={movie.id} movie={movie} />
-        ))}
-        {children}
+        {movies.length > 0 ? (
+          movies.map(movie => (
+            <MovieItem key={movie.id} movie={movie} />
+          ))
+        ) : (
+          children
+        )}
       </div>
     </MovieListContext.Provider>
   );
