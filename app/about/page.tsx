@@ -56,7 +56,7 @@ export default function About() {
             <SparklesIcon className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-3">3. Get Recommendations</h3>
             <p className="text-gray-300">
-              Receive personalized recommendations for upcoming movies you'll actually want to see.
+              Receive personalized recommendations for upcoming movies you&apos;ll actually want to see.
             </p>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function About() {
             <div>
               <h3 className="text-xl font-semibold mb-3 text-purple-400">OpenAI GPT Integration</h3>
               <p className="text-gray-300 mb-4">
-                Our recommendation engine uses OpenAI's advanced language models to understand the nuances of your movie preferences, analyzing genres, themes, directors, and storytelling styles.
+                Our recommendation engine uses OpenAI&apos;s advanced language models to understand the nuances of your movie preferences, analyzing genres, themes, directors, and storytelling styles.
               </p>
             </div>
             <div>
@@ -86,7 +86,7 @@ export default function About() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-gray-800/50 rounded-lg p-4">
               <h4 className="font-semibold mb-2 text-purple-400">Smart Recommendations</h4>
-              <p className="text-sm text-gray-300">AI analyzes your taste to suggest movies you'll actually enjoy</p>
+              <p className="text-sm text-gray-300">AI analyzes your taste to suggest movies you&apos;ll actually enjoy</p>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-4">
               <h4 className="font-semibold mb-2 text-purple-400">Upcoming Releases</h4>

@@ -1,17 +1,7 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import '@/index.css'
+import './globals.css'
+import { metadata } from './metadata'
 import { ClientAuthProvider } from '@/components/ClientAuthProvider'
-
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'MovieMind - AI-Powered Movie Recommendations',
-  description: 'Discover your next favorite movie with AI-powered recommendations',
-  icons: {
-    icon: '/favicon.ico',
-  },
-}
 
 export default function RootLayout({
   children,
@@ -20,7 +10,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="font-sans">
         <ClientAuthProvider>
           {children}
         </ClientAuthProvider>

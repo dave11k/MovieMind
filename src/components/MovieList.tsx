@@ -1,4 +1,5 @@
 import React, { createContext, useContext } from 'react';
+import Image from 'next/image';
 import { Movie } from '../types/Movie';
 import { PlusCircleIcon, XCircleIcon } from 'lucide-react';
 
@@ -65,11 +66,13 @@ const MovieItem = ({ movie }: MovieItemProps) => {
   return (
     <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <div className="relative">
-        <div className="aspect-[2/3] w-full">
-          <img
+        <div className="aspect-[2/3] w-full relative">
+          <Image
             src={posterUrl}
             alt={movie.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
         {movie.vote_average && !isNaN(movie.vote_average) && movie.vote_average > 0 && (

@@ -41,6 +41,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "postcss": "latest",
     "tailwindcss": "3.4.17",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.5.4"
   }
 }

@@ -19,6 +19,31 @@ interface Movie {
   explanation?: string;
 }
 
+interface TMDBMovie {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string;
+  release_date: string;
+  vote_average: number;
+  genre_ids: number[];
+  genre_names?: Record<number, string>;
+}
+
+interface Recommendation {
+  movieId: number;
+  title: string;
+  explanation: string;
+}
+
+interface RecommendationsResponse {
+  recommendations: Recommendation[];
+}
+
+interface EnrichedRecommendation extends Movie {
+  explanation: string;
+}
+
 export async function POST(request: Request) {
   try {
     console.log('Starting recommendation generation...');
@@ -40,7 +65,7 @@ export async function POST(request: Request) {
       const upcomingMovies = await tmdbAPI.getUpcomingMovies();
       console.log('Upcoming movies fetched:', upcomingMovies.results.length);
       
-      const nextTwoYears = upcomingMovies.results.filter((movie: any) => {
+      const nextTwoYears = upcomingMovies.results.filter((movie: TMDBMovie) => {
         const releaseDate = new Date(movie.release_date);
         const twoYearsFromNow = new Date();
         twoYearsFromNow.setFullYear(twoYearsFromNow.getFullYear() + 2);
@@ -68,7 +93,7 @@ ${favorites.map((movie: Movie) => `
 `).join('\n')}
 
 Upcoming Movies to Consider (IMPORTANT: Only recommend movies from this list):
-${nextTwoYears.map((movie: any) => `
+${nextTwoYears.map((movie: TMDBMovie) => `
 - ID: ${movie.id}
   Title: ${movie.title}
   Release Date: ${movie.release_date}
@@ -122,7 +147,7 @@ Example format:
       const aiResponse = completion.choices[0].message.content;
       console.log('Raw AI response:', aiResponse);
       
-      let recommendations;
+      let recommendations: RecommendationsResponse;
       try {
         // Clean the response by removing any markdown formatting and extra whitespace
         const cleanedResponse = aiResponse
@@ -165,7 +190,7 @@ Example format:
         }
 
         // Validate each recommendation has required fields
-        recommendations.recommendations = recommendations.recommendations.filter((rec: any) => {
+        recommendations.recommendations = recommendations.recommendations.filter((rec: Recommendation) => {
           if (!rec.movieId || typeof rec.movieId !== 'number') {
             console.warn('Invalid recommendation: missing or invalid movieId', rec);
             return false;
@@ -182,12 +207,12 @@ Example format:
         });
 
         console.log('Parsed recommendations:', recommendations.recommendations?.length || 0);
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error parsing AI response:', error);
         return NextResponse.json(
           { 
             error: 'Failed to parse AI recommendations', 
-            details: error.message,
+            details: error instanceof Error ? error.message : 'Unknown error',
             rawResponse: aiResponse // Include raw response for debugging
           },
           { status: 500 }
@@ -197,10 +222,10 @@ Example format:
       // Enrich recommendations with movie details
       console.log('Enriching recommendations with movie details...');
       const enrichedRecommendations = await Promise.all(
-        recommendations.recommendations.map(async (rec: any) => {
+        recommendations.recommendations.map(async (rec: Recommendation) => {
           try {
             // Validate that the movie exists in our upcoming movies list
-            const validMovie = nextTwoYears.find((movie: any) => movie.id === rec.movieId);
+            const validMovie = nextTwoYears.find((movie: TMDBMovie) => movie.id === rec.movieId);
             if (!validMovie) {
               console.warn(`Movie ID ${rec.movieId} not found in upcoming movies list`);
               return null;
@@ -217,10 +242,10 @@ Example format:
               poster_path: movieDetails.poster_path,
               release_date: movieDetails.release_date,
               vote_average: movieDetails.vote_average,
-              genre_ids: movieDetails.genres.map((g: any) => g.id),
-              genres: movieDetails.genres.map((g: any) => g.name),
+              genre_ids: movieDetails.genres.map((g: { id: number; name: string }) => g.id),
+              genres: movieDetails.genres.map((g: { id: number; name: string }) => g.name),
               explanation: rec.explanation
-            };
+            } as EnrichedRecommendation;
           } catch (error) {
             console.error(`Error fetching details for movie ${rec.movieId}:`, error);
             return null;
@@ -229,7 +254,7 @@ Example format:
       );
 
       // Filter out any null recommendations (invalid movies)
-      const validRecommendations = enrichedRecommendations.filter(rec => rec !== null);
+      const validRecommendations = enrichedRecommendations.filter((rec): rec is EnrichedRecommendation => rec !== null);
       console.log('Final recommendations count:', validRecommendations.length);
 
       if (validRecommendations.length === 0) {
@@ -243,23 +268,22 @@ Example format:
         recommendations: validRecommendations
       });
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error in TMDB or OpenAI processing:', error);
       return NextResponse.json(
         { 
           error: 'Failed to process movie data or generate recommendations',
-          details: error.message
+          details: error instanceof Error ? error.message : 'Unknown error'
         },
         { status: 500 }
       );
     }
-
-  } catch (error: any) {
-    console.error('Error in recommendations API:', error);
+  } catch (error) {
+    console.error('Error in recommendation generation:', error);
     return NextResponse.json(
       { 
         error: 'Failed to generate recommendations',
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
