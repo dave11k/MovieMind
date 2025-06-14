@@ -1,6 +1,7 @@
 import React from 'react';
-import { FilmIcon, SparklesIcon, LogInIcon, LogOutIcon } from 'lucide-react';
+import { FilmIcon, SparklesIcon, LogInIcon, LogOutIcon, Heart, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '../lib/supabase';
 
 export const Header = () => {
@@ -31,24 +32,42 @@ export const Header = () => {
   return (
     <header className="bg-gray-800 py-4 shadow-lg">
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <FilmIcon className="h-8 w-8 text-purple-500" />
           <h1 className="text-2xl font-bold">MovieMind</h1>
           <div className="flex items-center bg-purple-900/50 rounded-full px-3 py-1 text-sm">
             <SparklesIcon className="h-4 w-4 text-purple-400 mr-1" />
             <span className="text-purple-300">AI Powered</span>
           </div>
-        </div>
+        </Link>
         <nav className="flex items-center space-x-6">
           <ul className="flex space-x-6">
-            <li className="hover:text-purple-400 transition-colors cursor-pointer">
-              Home
+            <li>
+              <button
+                onClick={() => {
+                  // If we're on the home page, scroll to favorites
+                  if (window.location.pathname === '/') {
+                    const favoritesSection = document.getElementById('favorites-section');
+                    favoritesSection?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    // If we're on another page, navigate to home with favorites anchor
+                    router.push('/#favorites-section');
+                  }
+                }}
+                className="flex items-center space-x-1 hover:text-purple-400 transition-colors cursor-pointer"
+              >
+                <Heart className="h-4 w-4" />
+                <span>My Favorites</span>
+              </button>
             </li>
-            <li className="hover:text-purple-400 transition-colors cursor-pointer">
-              Discover
-            </li>
-            <li className="hover:text-purple-400 transition-colors cursor-pointer">
-              Profile
+            <li>
+              <Link 
+                href="/about" 
+                className="flex items-center space-x-1 hover:text-purple-400 transition-colors"
+              >
+                <Info className="h-4 w-4" />
+                <span>About</span>
+              </Link>
             </li>
           </ul>
           {user ? (

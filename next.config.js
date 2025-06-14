@@ -11,6 +11,11 @@ const nextConfig = {
       },
     ],
   },
+  // Add experimental features to help with client-side warnings
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
+  },
 }
 
 module.exports = nextConfig 

@@ -57,7 +57,7 @@ const MovieItem = ({ movie }: MovieItemProps) => {
             className="w-full h-full object-cover"
           />
         </div>
-        {!isNaN(movie.vote_average) && movie.vote_average > 0 && (
+        {movie.vote_average && !isNaN(movie.vote_average) && movie.vote_average > 0 && (
           <div className="absolute top-2 right-2 bg-black/70 rounded-full px-2 py-1 flex items-center">
             <span className="text-xs font-medium">
               {movie.vote_average.toFixed(1)}
@@ -65,16 +65,13 @@ const MovieItem = ({ movie }: MovieItemProps) => {
           </div>
         )}
       </div>
-      <div className="p-4 flex flex-col h-[200px]">
-        <h3 className="font-bold text-lg mb-1 truncate">{movie.title}</h3>
+      <div className="p-4 flex flex-col h-[130px]">
+        <h3 className="font-bold text-lg mb-2 truncate">{movie.title}</h3>
         <div className="flex items-center text-sm text-gray-400 mb-2">
-          <span>{new Date(movie.release_date).getFullYear()}</span>
+          <span>{movie.release_date ? new Date(movie.release_date).getFullYear() : 'TBA'}</span>
         </div>
-        <p className="text-gray-300 text-sm line-clamp-3 flex-grow max-h-[4.5em] overflow-hidden">
-          {movie.overview}
-        </p>
         {!disableButtons && (
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center mt-auto">
             <span className="text-xs px-2 py-1 bg-gray-700 rounded-full">
               {movie.genres?.[0] || 'Unknown Genre'}
             </span>

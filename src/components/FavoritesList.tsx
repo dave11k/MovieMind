@@ -15,7 +15,7 @@ export const FavoritesList = ({
   onAddToFavorites
 }: FavoritesListProps) => {
   return (
-    <section className="bg-gray-800/50 rounded-xl p-6">
+    <section id="favorites-section" className="bg-gray-800/50 rounded-xl p-6">
       <div className="flex items-center mb-4">
         <HeartIcon className="h-6 w-6 text-red-500 mr-2" />
         <h2 className="text-xl font-bold">Your Favorites</h2>

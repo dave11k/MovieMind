@@ -115,12 +115,13 @@ export default function Home() {
 
         setFavorites(formattedFavorites);
 
-        // Load AI recommendations
+        // Load AI recommendations (only most recent 8)
         const { data: recommendationsData, error: recommendationsError } = await supabase
           .from('recommendations')
           .select('*')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .limit(8);
 
         if (recommendationsError) {
           console.error('Error loading recommendations:', recommendationsError);
@@ -135,7 +136,8 @@ export default function Home() {
           overview: '',
           vote_average: 0,
           genre_ids: [],
-          genres: []
+          genres: [],
+          explanation: rec.reason
         }));
 
         setAiRecommendations(formattedRecommendations);
@@ -277,14 +279,24 @@ export default function Home() {
       }
 
       if (user) {
-        // Save recommendations to Supabase for signed-in users
+        // Clear existing recommendations first
+        const { error: deleteError } = await supabase
+          .from('recommendations')
+          .delete()
+          .eq('user_id', user.id);
+
+        if (deleteError) {
+          console.error('Error clearing old recommendations:', deleteError);
+        }
+
+        // Save new recommendations to Supabase for signed-in users
         const recommendationsToSave = data.recommendations.map((rec: any) => ({
           user_id: user.id,
           movie_id: rec.id,
           movie_title: rec.title,
           movie_poster: rec.poster_path,
-          reason: rec.reason,
-          confidence_score: rec.confidence_score
+          reason: rec.explanation,
+          confidence_score: rec.confidence_score || 0.8
         }));
 
         const { error } = await supabase
@@ -356,8 +368,15 @@ export default function Home() {
                   onRemoveFromFavorites={removeFromFavorites}
                   favorites={favorites}
                 >
-                  {searchResults.slice(0, visibleResults).map(movie => (
-                    <MovieList.Item key={movie.id} movie={movie} />
+                  {searchResults.slice(0, visibleResults).map((movie, index) => (
+                    <div
+                      key={movie.id}
+                      style={{ 
+                        animation: `slideInUp 0.4s ease-out ${index * 50}ms both`
+                      }}
+                    >
+                      <MovieList.Item movie={movie} />
+                    </div>
                   ))}
                 </MovieList>
                 {visibleResults < searchResults.length && (
@@ -406,9 +425,17 @@ export default function Home() {
                 )}
               </div>
               {aiRecommendations.length > 0 ? (
-                <RecommendationsList recommendations={aiRecommendations} favorites={favorites} />
+                <RecommendationsList 
+                  recommendations={aiRecommendations} 
+                  favorites={favorites} 
+                  isLoading={isGeneratingRecommendations} 
+                />
               ) : (
-                <RecommendationsList recommendations={recommendations} favorites={favorites} />
+                <RecommendationsList 
+                  recommendations={recommendations} 
+                  favorites={favorites} 
+                  isLoading={isGeneratingRecommendations} 
+                />
               )}
             </>
           )}

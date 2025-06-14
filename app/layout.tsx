@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'MovieMind - AI-Powered Movie Recommendations',
   description: 'Discover your next favorite movie with AI-powered recommendations',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
