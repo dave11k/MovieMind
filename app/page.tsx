@@ -63,6 +63,7 @@ export default function Home() {
             movie_id: rec.id,
             movie_title: rec.title,
             movie_poster: rec.poster_path,
+            movie_year: rec.release_date ? parseInt(rec.release_date.split('-')[0]) : null,
             reason: rec.reason || 'Based on your favorites',
             confidence_score: rec.confidence_score || 0.8
           }));
@@ -134,7 +135,7 @@ export default function Home() {
           title: rec.movie_title,
           poster_path: rec.movie_poster,
           backdrop_path: null,
-          release_date: '',
+          release_date: rec.movie_year?.toString() || '',
           overview: '',
           vote_average: 0,
           genre_ids: [],
@@ -298,6 +299,7 @@ export default function Home() {
           movie_id: rec.id,
           movie_title: rec.title,
           movie_poster: rec.poster_path,
+          movie_year: rec.release_date ? parseInt(rec.release_date.split('-')[0]) : null,
           reason: rec.explanation,
           confidence_score: rec.confidence_score || 0.8
         }));

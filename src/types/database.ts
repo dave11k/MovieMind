@@ -51,6 +51,7 @@ export interface Database {
             movie_id: number
             movie_title: string
             movie_poster: string | null
+            movie_year: number | null
             reason: string
             confidence_score: number | null
             created_at: string
@@ -61,6 +62,7 @@ export interface Database {
             movie_id: number
             movie_title: string
             movie_poster?: string | null
+            movie_year?: number | null
             reason: string
             confidence_score?: number | null
             created_at?: string
@@ -71,6 +73,7 @@ export interface Database {
             movie_id?: number
             movie_title?: string
             movie_poster?: string | null
+            movie_year?: number | null
             reason?: string
             confidence_score?: number | null
             created_at?: string
