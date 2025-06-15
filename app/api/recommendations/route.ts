@@ -67,13 +67,24 @@ export async function POST(request: Request) {
       
       const nextTwoYears = upcomingMovies.results.filter((movie: TMDBMovie) => {
         const releaseDate = new Date(movie.release_date);
+        const today = new Date();
         const twoYearsFromNow = new Date();
         twoYearsFromNow.setFullYear(twoYearsFromNow.getFullYear() + 2);
-        return releaseDate <= twoYearsFromNow;
+        return releaseDate > today && releaseDate <= twoYearsFromNow;
       });
-      console.log('Filtered movies for next two years:', nextTwoYears.length);
 
-      if (nextTwoYears.length === 0) {
+      // Remove any duplicate movies by ID
+      const uniqueMovies = nextTwoYears.reduce((acc: TMDBMovie[], current: TMDBMovie) => {
+        const exists = acc.find(movie => movie.id === current.id);
+        if (!exists) {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
+
+      console.log('Filtered movies for next two years:', uniqueMovies.length);
+
+      if (uniqueMovies.length === 0) {
         console.error('No upcoming movies found');
         return NextResponse.json(
           { error: 'No upcoming movies found' },
@@ -93,7 +104,7 @@ ${favorites.map((movie: Movie) => `
 `).join('\n')}
 
 Upcoming Movies to Consider (IMPORTANT: Only recommend movies from this list):
-${nextTwoYears.map((movie: TMDBMovie) => `
+${uniqueMovies.map((movie: TMDBMovie) => `
 - ID: ${movie.id}
   Title: ${movie.title}
   Release Date: ${movie.release_date}
@@ -106,12 +117,14 @@ Please provide 8 movie recommendations from the upcoming movies list above. For 
 2. Explain why you're recommending it based on the user's favorite movies
 3. Highlight any similarities in genre, style, or themes
 4. Keep the explanation concise (2-3 sentences)
+5. IMPORTANT: Do not recommend the same movie twice
 
 IMPORTANT: 
 - Return ONLY a valid JSON object with this exact structure
 - Use ONLY movie IDs from the list above
 - Do not include any markdown, code blocks, or additional text
 - Escape any special characters in strings
+- Do not recommend the same movie twice
 
 Example format:
 {
@@ -225,7 +238,7 @@ Example format:
         recommendations.recommendations.map(async (rec: Recommendation) => {
           try {
             // Validate that the movie exists in our upcoming movies list
-            const validMovie = nextTwoYears.find((movie: TMDBMovie) => movie.id === rec.movieId);
+            const validMovie = uniqueMovies.find((movie: TMDBMovie) => movie.id === rec.movieId);
             if (!validMovie) {
               console.warn(`Movie ID ${rec.movieId} not found in upcoming movies list`);
               return null;

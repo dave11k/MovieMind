@@ -100,27 +100,9 @@ class TMDBService {
     }
   
     async getUpcomingMovies() {
-      const currentYear = new Date().getFullYear();
-      const nextYear = currentYear + 1;
-      
-      // Fetch movies for current year and next year
-      const [currentYearMovies, nextYearMovies] = await Promise.all([
-        this.discoverMovies({
-          primary_release_year: currentYear,
-          sort_by: 'release_date.asc',
-          'release_date.gte': new Date().toISOString().split('T')[0] // Only future dates
-        }),
-        this.discoverMovies({
-          primary_release_year: nextYear,
-          sort_by: 'release_date.asc'
-        })
-      ]);
-
-      // Combine and sort results
-      return {
-        results: [...currentYearMovies.results, ...nextYearMovies.results]
-          .sort((a, b) => new Date(a.release_date).getTime() - new Date(b.release_date).getTime())
-      };
+      return this.makeRequest('/movie/upcoming', {
+        sort_by: 'release_date.asc'
+      });
     }
   
     async getPopularMovies(page = 1) {

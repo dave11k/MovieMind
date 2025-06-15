@@ -282,6 +282,15 @@ export default function Home() {
         throw new Error(data.error + (data.details ? `: ${data.details}` : ''));
       }
 
+      // Deduplicate recommendations by movie ID
+      const uniqueRecommendations = data.recommendations.reduce((acc: Movie[], current: Movie) => {
+        const exists = acc.find(movie => movie.id === current.id);
+        if (!exists) {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
+
       if (user) {
         // Clear existing recommendations first
         const { error: deleteError } = await supabase
@@ -294,7 +303,7 @@ export default function Home() {
         }
 
         // Save new recommendations to Supabase for signed-in users
-        const recommendationsToSave = data.recommendations.map((rec: any) => ({
+        const recommendationsToSave = uniqueRecommendations.map((rec: any) => ({
           user_id: user.id,
           movie_id: rec.id,
           movie_title: rec.title,
@@ -313,10 +322,10 @@ export default function Home() {
         }
       } else {
         // Save recommendations to localStorage for anonymous users
-        localStorage.setItem('aiRecommendations', JSON.stringify(data.recommendations));
+        localStorage.setItem('aiRecommendations', JSON.stringify(uniqueRecommendations));
       }
 
-      setAiRecommendations(data.recommendations);
+      setAiRecommendations(uniqueRecommendations);
     } catch (error: any) {
       console.error('Error generating recommendations:', error);
       alert(`Failed to generate recommendations: ${error.message || 'Unknown error'}`);
