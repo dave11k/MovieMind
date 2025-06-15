@@ -47,7 +47,7 @@ export function App() {
           </section>
         )}
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <FavoritesList favorites={favorites} onRemoveFromFavorites={removeFromFavorites} />
+          <FavoritesList favorites={favorites} onRemoveFromFavorites={removeFromFavorites} onAddToFavorites={addToFavorites} />
           <RecommendationsList recommendations={recommendations} />
         </div>
       </main>

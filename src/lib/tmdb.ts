@@ -2,7 +2,6 @@ import { Movie } from '../types/Movie';
 
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
 interface TMDBResponse<T> {
   results: T[];
@@ -90,7 +89,7 @@ class TMDBService {
       return this.makeRequest('/search/movie', { query, page });
     }
   
-    async getMovieDetails(movieId: number, appendToResponse: string = 'credits,videos,similar') {
+    async getMovieDetails(movieId: number, appendToResponse = 'credits,videos,similar') {
       return this.makeRequest(`/movie/${movieId}`, { 
         append_to_response: appendToResponse 
       });
@@ -128,7 +127,7 @@ class TMDBService {
       return this.makeRequest('/movie/popular', { page });
     }
   
-    async getTrendingMovies(timeWindow: string = 'week') {
+    async getTrendingMovies(timeWindow = 'week') {
       return this.makeRequest(`/trending/movie/${timeWindow}`);
     }
 

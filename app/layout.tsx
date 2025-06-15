@@ -1,6 +1,4 @@
-import type { Metadata } from 'next'
 import './globals.css'
-import { metadata } from './metadata'
 import { ClientAuthProvider } from '@/components/ClientAuthProvider'
 
 export default function RootLayout({

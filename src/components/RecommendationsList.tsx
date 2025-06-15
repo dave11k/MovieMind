@@ -4,10 +4,11 @@ import { MovieList } from './MovieList';
 
 interface RecommendationsListProps {
   recommendations: Movie[];
+  favorites?: Movie[];
+  isLoading?: boolean;
 }
 
-export const RecommendationsList: React.FC<RecommendationsListProps> = ({ recommendations }) => {
-  const isLoading = false;
+export const RecommendationsList: React.FC<RecommendationsListProps> = ({ recommendations, isLoading = false }) => {
 
   return (
     <div className="bg-gray-800/50 rounded-lg p-6">

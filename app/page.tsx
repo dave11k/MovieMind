@@ -16,7 +16,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [favorites, setFavorites] = useState<Movie[]>([]);
-  const [recommendations, setRecommendations] = useState<Movie[]>([]);
+  const [recommendations] = useState<Movie[]>([]);
   const [aiRecommendations, setAiRecommendations] = useState<Movie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
