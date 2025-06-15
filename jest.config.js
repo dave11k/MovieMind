@@ -55,25 +55,20 @@ const customJestConfig = {
   // Test timeout
   testTimeout: 30000,
   
-  // Transform configuration
-  preset: 'ts-jest',
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  
   // Module directories
   moduleDirectories: ['node_modules', '<rootDir>/'],
   
-  // Transform ignore patterns
+  // Transform ignore patterns - Allow ES modules to be transformed
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$|@testing-library|@supabase|msw))',
+    'node_modules/(?!(.*\\.mjs$|@testing-library|@supabase|msw|@supabase/.*|uuid))',
   ],
   
-  // Globals
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        jsx: 'react-jsx',
-      },
-    },
+  // Module file extensions
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  
+  // Transform configuration
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
 }
 

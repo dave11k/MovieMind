@@ -39,7 +39,7 @@ const MovieList = ({
 
   return (
     <MovieListContext.Provider value={contextValue}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div data-testid="movie-list-grid" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {movies.length > 0 ? (
           movies.map(movie => (
             <MovieItem key={movie.id} movie={movie} />

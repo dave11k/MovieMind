@@ -90,7 +90,7 @@ describe('MovieList Component', () => {
     )
 
     // Should render the grid but with no movie items
-    const movieGrid = screen.getByRole('generic')
+    const movieGrid = screen.getByTestId('movie-list-grid')
     expect(movieGrid).toBeInTheDocument()
     expect(movieGrid).toHaveClass('grid')
   })

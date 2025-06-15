@@ -1,7 +1,15 @@
 import React from 'react'
 import { render, RenderOptions } from '@testing-library/react'
-import { AuthContext } from '@/contexts/AuthContext'
 import { Movie } from '@/types/Movie'
+
+// Mock AuthContext
+const AuthContext = React.createContext({
+  user: null,
+  loading: false,
+  signIn: jest.fn(),
+  signUp: jest.fn(),
+  signOut: jest.fn(),
+})
 
 // Mock AuthContext Provider
 interface MockAuthProviderProps {

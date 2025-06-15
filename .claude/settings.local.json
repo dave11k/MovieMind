@@ -11,7 +11,8 @@
       "Bash(npm test:*)",
       "Bash(npm ls:*)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

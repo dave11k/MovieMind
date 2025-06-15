@@ -14,6 +14,73 @@ configure({
   testIdAttribute: 'data-testid',
 })
 
+// Mock Supabase
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+    auth: {
+      getSession: jest.fn().mockResolvedValue({
+        data: { session: null },
+        error: null,
+      }),
+      onAuthStateChange: jest.fn().mockReturnValue({
+        data: {
+          subscription: {
+            unsubscribe: jest.fn(),
+          },
+        },
+      }),
+      signInWithPassword: jest.fn().mockResolvedValue({
+        data: { user: null, session: null },
+        error: null,
+      }),
+      signUp: jest.fn().mockResolvedValue({
+        data: { user: null, session: null },
+        error: null,
+      }),
+      signOut: jest.fn().mockResolvedValue({
+        error: null,
+      }),
+    },
+    from: jest.fn(() => ({
+      select: jest.fn().mockReturnThis(),
+      insert: jest.fn().mockResolvedValue({
+        data: [],
+        error: null,
+      }),
+      update: jest.fn().mockReturnThis(),
+      delete: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      order: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+    })),
+  })),
+}))
+
+// Mock TMDB API
+jest.mock('@/lib/tmdb', () => ({
+  tmdbAPI: {
+    searchMovie: jest.fn().mockResolvedValue({
+      results: [],
+      total_pages: 0,
+    }),
+    getMovieDetails: jest.fn().mockResolvedValue({
+      id: 123,
+      title: 'Test Movie',
+      external_ids: { imdb_id: 'tt1234567' },
+    }),
+  },
+  genreMap: {
+    28: 'Action',
+    12: 'Adventure',
+    35: 'Comedy',
+  },
+  getMovieDetails: jest.fn().mockResolvedValue({
+    id: 123,
+    title: 'Test Movie',
+    external_ids: { imdb_id: 'tt1234567' },
+  }),
+}))
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -38,8 +105,9 @@ jest.mock('next/navigation', () => ({
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props) => {
+    const { fill, sizes, ...imgProps } = props;
     // eslint-disable-next-line @next/next/no-img-element
-    return <img {...props} />
+    return <img {...imgProps} />
   },
 }))
 
@@ -71,6 +139,18 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 })
+
+// Mock AuthContext
+jest.mock('@/contexts/AuthContext', () => ({
+  useAuth: jest.fn(() => ({
+    user: null,
+    loading: false,
+    signIn: jest.fn(),
+    signUp: jest.fn(),
+    signOut: jest.fn(),
+  })),
+  AuthProvider: ({ children }) => children,
+}))
 
 // Mock environment variables
 process.env.NEXT_PUBLIC_TMDB_API_KEY = 'test_tmdb_key'
