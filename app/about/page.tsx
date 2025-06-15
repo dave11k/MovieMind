@@ -21,15 +21,29 @@ export default function About() {
 
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <div className="flex justify-center items-center space-x-3 mb-6">
-            <FilmIcon className="h-12 w-12 text-purple-500" />
-            <h1 className="text-4xl font-bold">About MovieMind</h1>
+          {/* Mobile layout - stacked */}
+          <div className="flex flex-col items-center space-y-3 sm:hidden mb-6">
+            <div className="flex items-center space-x-2">
+              <FilmIcon className="h-8 w-8 text-purple-500" />
+              <h1 className="text-2xl font-bold">About MovieMind</h1>
+            </div>
+            <div className="flex items-center bg-purple-900/50 rounded-full px-3 py-1">
+              <SparklesIcon className="h-4 w-4 text-purple-400 mr-1" />
+              <span className="text-purple-300 text-sm">AI Powered</span>
+            </div>
+          </div>
+          
+          {/* Desktop layout - horizontal */}
+          <div className="hidden sm:flex justify-center items-center space-x-3 mb-6">
+            <FilmIcon className="h-10 w-10 lg:h-12 lg:w-12 text-purple-500" />
+            <h1 className="text-3xl lg:text-4xl font-bold">About MovieMind</h1>
             <div className="flex items-center bg-purple-900/50 rounded-full px-3 py-1">
               <SparklesIcon className="h-5 w-5 text-purple-400 mr-1" />
               <span className="text-purple-300 text-sm">AI Powered</span>
             </div>
           </div>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          
+          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto">
             Discover your next favorite movie with personalized AI recommendations based on your unique taste.
           </p>
         </div>
