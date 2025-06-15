@@ -9,4 +9,5 @@ export interface Movie {
   genre_ids: number[];
   genres?: string[];
   explanation?: string;
+  imdb_id?: string;
 }

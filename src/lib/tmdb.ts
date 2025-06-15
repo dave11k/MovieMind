@@ -89,7 +89,7 @@ class TMDBService {
       return this.makeRequest('/search/movie', { query, page });
     }
   
-    async getMovieDetails(movieId: number, appendToResponse = 'credits,videos,similar') {
+    async getMovieDetails(movieId: number, appendToResponse = 'credits,videos,similar,external_ids') {
       return this.makeRequest(`/movie/${movieId}`, { 
         append_to_response: appendToResponse 
       });
