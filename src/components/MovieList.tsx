@@ -83,12 +83,12 @@ const MovieItem = ({ movie }: MovieItemProps) => {
           </div>
         )}
       </div>
-      <div className="p-4 flex flex-col h-[130px]">
+      <div className="p-4 flex flex-col min-h-[130px]">
         <h3 className="font-bold text-lg mb-2 truncate">{movie.title}</h3>
         <div className="flex items-center text-sm text-gray-400 mb-2">
           <span>{movie.release_date ? new Date(movie.release_date).getFullYear() : 'TBA'}</span>
         </div>
-        {!disableButtons && (
+        {!disableButtons ? (
           <div className="flex justify-between items-center mt-auto">
             <span className="text-xs px-2 py-1 bg-gray-700 rounded-full">
               {movie.genres?.[0] || 'Unknown Genre'}
@@ -109,6 +109,16 @@ const MovieItem = ({ movie }: MovieItemProps) => {
                 <PlusCircleIcon className="h-5 w-5 mr-1" />
                 <span className="text-sm">Add</span>
               </button>
+            )}
+          </div>
+        ) : (
+          <div className="mt-auto">
+            {movie.explanation && (
+              <div className="bg-purple-900/30 rounded-md p-2 border-l-2 border-purple-500">
+                <p className="text-sm text-gray-300 italic">
+                  {movie.explanation}
+                </p>
+              </div>
             )}
           </div>
         )}
