@@ -17,6 +17,7 @@
     "@types/lodash": "^4.17.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "critters": "^0.0.23",
     "glob": "^11.0.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.441.0",
