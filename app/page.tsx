@@ -8,7 +8,7 @@ import { MovieList } from '../src/components/MovieList';
 import { FavoritesList } from '../src/components/FavoritesList';
 import { RecommendationsList } from '../src/components/RecommendationsList';
 import { Movie } from '../src/types/Movie';
-import { tmdbAPI, genreMap } from '../src/lib/tmdb';
+import { tmdbAPI, genreMap, getMovieDetails } from '../src/lib/tmdb';
 import { supabase } from '../src/lib/supabase';
 import debounce from 'lodash/debounce';
 
@@ -109,7 +109,7 @@ export default function Home() {
           backdrop_path: null,
           release_date: fav.movie_year?.toString(),
           overview: '',
-          vote_average: 0,
+          vote_average: fav.vote_average || 0,
           genre_ids: [],
           genres: fav.movie_genres || []
         }));
@@ -217,7 +217,8 @@ export default function Home() {
             movie_title: movie.title,
             movie_poster: movie.poster_path,
             movie_year: movie.release_date ? parseInt(movie.release_date.split('-')[0]) : null,
-            movie_genres: movie.genres
+            movie_genres: movie.genres,
+            vote_average: movie.vote_average
           });
 
         if (error) {

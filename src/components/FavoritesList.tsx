@@ -26,14 +26,11 @@ export const FavoritesList = ({
         </div>
       ) : (
         <MovieList 
+          movies={favorites}
           onRemoveFromFavorites={onRemoveFromFavorites} 
           onAddToFavorites={onAddToFavorites}
           favorites={favorites}
-        >
-          {favorites.map(movie => (
-            <MovieList.Item key={movie.id} movie={movie} />
-          ))}
-        </MovieList>
+        />
       )}
     </section>
   );

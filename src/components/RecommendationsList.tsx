@@ -23,11 +23,7 @@ export const RecommendationsList: React.FC<RecommendationsListProps> = ({ recomm
           ))}
         </div>
       ) : (
-        <div className="space-y-4">
-          {recommendations.map((movie) => (
-            <MovieList.Item key={movie.id} movie={movie} />
-          ))}
-        </div>
+        <MovieList movies={recommendations} disableButtons={true} />
       )}
     </div>
   );

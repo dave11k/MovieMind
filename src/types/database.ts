@@ -18,6 +18,7 @@ export interface Database {
             movie_poster: string | null
             movie_year: number | null
             movie_genres: string[] | null
+            vote_average: number | null
             created_at: string
           }
           Insert: {
@@ -28,6 +29,7 @@ export interface Database {
             movie_poster?: string | null
             movie_year?: number | null
             movie_genres?: string[] | null
+            vote_average?: number | null
             created_at?: string
           }
           Update: {
@@ -38,6 +40,7 @@ export interface Database {
             movie_poster?: string | null
             movie_year?: number | null
             movie_genres?: string[] | null
+            vote_average?: number | null
             created_at?: string
           }
         }

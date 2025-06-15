@@ -75,7 +75,7 @@ const MovieItem = ({ movie }: MovieItemProps) => {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
-        {movie.vote_average && !isNaN(movie.vote_average) && movie.vote_average > 0 && (
+        {movie.vote_average !== undefined && !isNaN(movie.vote_average) && movie.vote_average > 0 && (
           <div className="absolute top-2 right-2 bg-black/70 rounded-full px-2 py-1 flex items-center">
             <span className="text-xs font-medium">
               {movie.vote_average.toFixed(1)}
