@@ -259,8 +259,8 @@ export default function Home() {
     setFavorites(prev => prev.filter(movie => movie.id !== movieId));
   };
 
-  // Generate AI recommendations
-  const generateRecommendations = async () => {
+  // Generate AI recommendations with retry logic
+  const generateRecommendations = async (retryCount = 0) => {
     if (favorites.length === 0) {
       alert('Please add some movies to your favorites first!');
       return;
@@ -293,6 +293,13 @@ export default function Home() {
         }
         return acc;
       }, []);
+
+      // Check if we have fewer than 4 recommendations and retry if needed
+      if (uniqueRecommendations.length < 4 && retryCount < 2) {
+        console.log(`Only ${uniqueRecommendations.length} recommendations generated, retrying... (attempt ${retryCount + 1})`);
+        setIsGeneratingRecommendations(false);
+        return generateRecommendations(retryCount + 1);
+      }
 
       if (user) {
         // Clear existing recommendations first
@@ -506,7 +513,7 @@ export default function Home() {
                 </button>
               )}
               <button
-                onClick={generateRecommendations}
+                onClick={() => generateRecommendations()}
                 disabled={isGeneratingRecommendations}
                 className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center font-medium text-sm sm:text-base"
               >
