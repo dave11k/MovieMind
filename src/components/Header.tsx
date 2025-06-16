@@ -31,7 +31,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 py-4 shadow-lg">
+    <header className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-sm py-4 shadow-lg border-b border-gray-700">
       <div className="container mx-auto px-4">
         {/* Main header row */}
         <div className="flex items-center justify-between">
@@ -77,7 +77,7 @@ export const Header = () => {
             {user ? (
               <button
                 onClick={handleSignOut}
-                className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-800 text-white rounded-lg transition-colors"
               >
                 <LogOutIcon className="h-5 w-5" />
                 <span>Sign Out</span>
@@ -85,7 +85,7 @@ export const Header = () => {
             ) : (
               <button
                 onClick={() => router.push('/login')}
-                className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-800 text-white rounded-lg transition-colors"
               >
                 <LogInIcon className="h-5 w-5" />
                 <span>Sign In</span>
@@ -142,7 +142,7 @@ export const Header = () => {
                       setIsMobileMenuOpen(false);
                       handleSignOut();
                     }}
-                    className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors w-full"
+                    className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-800 text-white rounded-lg transition-colors w-full"
                   >
                     <LogOutIcon className="h-5 w-5" />
                     <span>Sign Out</span>
@@ -153,7 +153,7 @@ export const Header = () => {
                       setIsMobileMenuOpen(false);
                       router.push('/login');
                     }}
-                    className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors w-full"
+                    className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-800 text-white rounded-lg transition-colors w-full"
                   >
                     <LogInIcon className="h-5 w-5" />
                     <span>Sign In</span>

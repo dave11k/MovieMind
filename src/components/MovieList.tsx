@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import Image from 'next/image';
 import { Movie } from '../types/Movie';
-import { PlusCircleIcon, XCircleIcon, ExternalLinkIcon } from 'lucide-react';
+import { PlusCircleIcon, XCircleIcon, ExternalLinkIcon, Star } from 'lucide-react';
 import { tmdbAPI } from '../lib/tmdb';
 
 interface MovieListContextType {
@@ -12,6 +12,41 @@ interface MovieListContextType {
 }
 
 const MovieListContext = createContext<MovieListContextType>({});
+
+// Star Rating Component
+const StarRating = ({ rating, compact = false }: { rating: number; compact?: boolean }) => {
+  const stars = Math.round((rating / 10) * 5); // Convert 10-star to 5-star rating
+  const filledStars = Math.max(0, Math.min(5, stars));
+  
+  if (compact) {
+    return (
+      <div className="flex items-center">
+        <Star className="h-3 w-3 text-yellow-400 fill-current mr-1" />
+        <span className="text-xs text-white font-medium">
+          {rating > 0 ? rating.toFixed(1) : 'N/A'}
+        </span>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="flex items-center">
+      {[...Array(5)].map((_, index) => (
+        <Star
+          key={index}
+          className={`h-4 w-4 ${
+            index < filledStars
+              ? 'text-yellow-400 fill-current'
+              : 'text-gray-400'
+          }`}
+        />
+      ))}
+      <span className="ml-2 text-sm text-gray-400">
+        {rating > 0 ? rating.toFixed(1) : 'N/A'}
+      </span>
+    </div>
+  );
+};
 
 interface MovieListProps {
   children?: React.ReactNode;
@@ -39,7 +74,7 @@ const MovieList = ({
 
   return (
     <MovieListContext.Provider value={contextValue}>
-      <div data-testid="movie-list-grid" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div data-testid="movie-list-grid" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
         {movies.length > 0 ? (
           movies.map(movie => (
             <MovieItem key={movie.id} movie={movie} />
@@ -94,7 +129,7 @@ const MovieItem = ({ movie }: MovieItemProps) => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
+    <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300 flex flex-col cursor-pointer group">
       <div className="relative">
         <div className="aspect-[2/3] w-full relative">
           <Image
@@ -105,19 +140,19 @@ const MovieItem = ({ movie }: MovieItemProps) => {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
-        {movie.vote_average !== undefined && !isNaN(movie.vote_average) && movie.vote_average > 0 && (
-          <div className="absolute top-2 right-2 bg-black/70 rounded-full px-2 py-1 flex items-center">
-            <span className="text-xs font-medium">
-              {movie.vote_average.toFixed(1)}
+        <div className="absolute top-2 right-2 bg-black/80 rounded-lg px-2 py-1 flex flex-col items-end gap-1">
+          {movie.release_date && (
+            <span className="text-xs font-bold text-white bg-purple-600 px-2 py-1 rounded">
+              {new Date(movie.release_date).getFullYear()}
             </span>
-          </div>
-        )}
+          )}
+          {movie.vote_average !== undefined && !isNaN(movie.vote_average) && movie.vote_average > 0 && (
+            <StarRating rating={movie.vote_average} compact={true} />
+          )}
+        </div>
       </div>
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="font-bold text-lg mb-2 truncate">{movie.title}</h3>
-        <div className="flex items-center text-sm text-gray-400 mb-2">
-          <span>{movie.release_date ? new Date(movie.release_date).getFullYear() : 'TBA'}</span>
-        </div>
         {!disableButtons ? (
           <div className="flex justify-between items-center mt-auto">
             <span className="text-xs px-2 py-1 bg-gray-700 rounded-full">
@@ -139,18 +174,18 @@ const MovieItem = ({ movie }: MovieItemProps) => {
               {isFavorite ? (
                 <button
                   onClick={() => onRemoveFromFavorites?.(movie.id)}
-                  className="bg-red-400/10 text-red-400 hover:bg-red-400/20 hover:text-red-300 transition-colors flex items-center px-3 py-1.5 rounded-lg"
+                  className="bg-red-500/20 text-red-400 hover:bg-red-500/30 hover:text-red-300 transition-colors flex items-center justify-center px-3 py-1.5 rounded-lg font-medium border border-red-500/30"
                 >
-                  <XCircleIcon className="h-5 w-5 mr-1" />
-                  <span className="text-sm">Remove</span>
+                  <XCircleIcon className="h-4 w-4 mr-1" />
+                  <span className="text-sm leading-none" style={{ marginBottom: '2px' }}>Remove</span>
                 </button>
               ) : (
                 <button
                   onClick={() => onAddToFavorites?.(movie)}
-                  className="bg-purple-400/10 text-purple-400 hover:bg-purple-400/20 hover:text-purple-300 transition-colors flex items-center px-3 py-1.5 rounded-lg"
+                  className="bg-green-500/20 text-green-400 hover:bg-green-500/30 hover:text-green-300 transition-colors flex items-center justify-center px-3 py-1.5 rounded-lg font-medium border border-green-500/30"
                 >
-                  <PlusCircleIcon className="h-5 w-5 mr-1" />
-                  <span className="text-sm">Add</span>
+                  <PlusCircleIcon className="h-4 w-4 mr-1" />
+                  <span className="text-sm leading-none" style={{ marginBottom: '2px' }}>Add</span>
                 </button>
               )}
             </div>

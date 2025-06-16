@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useEffect, useState, useCallback } from 'react';
+import { SparklesIcon, SearchIcon } from 'lucide-react';
 import { Header } from '../src/components/Header';
 import { SearchBar } from '../src/components/SearchBar';
 import { MovieList } from '../src/components/MovieList';
@@ -329,6 +330,17 @@ export default function Home() {
 
       console.log('Setting new AI recommendations:', uniqueRecommendations.length);
       setAiRecommendations(uniqueRecommendations);
+      
+      // Scroll to recommendations section after setting recommendations
+      setTimeout(() => {
+        const recommendationsSection = document.querySelector('[data-testid="recommendations-section"]');
+        if (recommendationsSection) {
+          recommendationsSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 100);
     } catch (error: any) {
       console.error('Error generating recommendations:', error);
       alert(`Failed to generate recommendations: ${error.message || 'Unknown error'}`);
@@ -358,6 +370,30 @@ export default function Home() {
     setAiRecommendations([]);
   };
 
+  // Clear all favorites
+  const clearAllFavorites = async () => {
+    if (window.confirm('Are you sure you want to remove all favorites?')) {
+      if (user) {
+        // Clear from Supabase for signed-in users
+        const { error } = await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error clearing favorites:', error);
+          return;
+        }
+      } else {
+        // Clear from localStorage for anonymous users
+        localStorage.removeItem('movieFavorites');
+      }
+
+      setFavorites([]);
+      setAiRecommendations([]); // Also clear recommendations when clearing favorites
+    }
+  };
+
   // Show more results
   const showMoreResults = () => {
     setVisibleResults(prev => Math.min(prev + 4, searchResults.length));
@@ -376,8 +412,11 @@ export default function Home() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
           </section>
         ) : searchQuery.trim() !== '' && (
-          <section className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">Search Results</h2>
+          <section className="mt-8 bg-slate-800 rounded-xl p-6">
+            <div className="flex items-center mb-6">
+              <SearchIcon className="h-6 w-6 text-purple-400 mr-2" />
+              <h2 className="text-2xl font-bold text-purple-400">Search Results</h2>
+            </div>
             {searchResults.length > 0 ? (
               <>
                 <MovieList 
@@ -414,55 +453,79 @@ export default function Home() {
             )}
           </section>
         )}
-        <div className="mt-12 space-y-8">
-          {favorites.length > 0 && (
-            <>
-              <div className="flex justify-center gap-4 mb-8">
-                <button
-                  onClick={generateRecommendations}
-                  disabled={isGeneratingRecommendations}
-                  className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center"
-                >
-                  {isGeneratingRecommendations ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                      Generating Recommendations...
-                    </>
-                  ) : (
-                    'Generate AI Recommendations'
-                  )}
-                </button>
-                {aiRecommendations.length > 0 && (
-                  <button
-                    onClick={clearRecommendations}
-                    className="px-6 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg transition-colors flex items-center"
-                  >
-                    Clear Recommendations
-                  </button>
-                )}
-              </div>
-              {aiRecommendations.length > 0 ? (
-                <RecommendationsList 
-                  recommendations={aiRecommendations} 
-                  favorites={favorites} 
-                  isLoading={isGeneratingRecommendations} 
-                />
-              ) : (
-                <RecommendationsList 
-                  recommendations={recommendations} 
-                  favorites={favorites} 
-                  isLoading={isGeneratingRecommendations} 
-                />
-              )}
-            </>
+        
+        {/* Section Divider */}
+        {(searchQuery.trim() !== '' && searchResults.length > 0) && (favorites.length > 0) && (
+          <hr className="my-12 border-gray-700" />
+        )}
+        
+        <div className="space-y-12 pb-24 mt-12">
+          {favorites.length > 0 && (aiRecommendations.length > 0 || isGeneratingRecommendations) && (
+            <RecommendationsList 
+              recommendations={aiRecommendations} 
+              favorites={favorites} 
+              isLoading={isGeneratingRecommendations}
+              onGenerateRecommendations={generateRecommendations}
+              isGenerating={isGeneratingRecommendations}
+            />
           )}
+          
+          {/* Section Divider between Recommendations and Favorites */}
+          {favorites.length > 0 && (aiRecommendations.length > 0 || isGeneratingRecommendations) && (
+            <hr className="border-gray-700" />
+          )}
+          
           <FavoritesList 
             favorites={favorites} 
             onRemoveFromFavorites={removeFromFavorites}
             onAddToFavorites={addToFavorites}
+            onClearAllFavorites={clearAllFavorites}
           />
         </div>
       </main>
+      
+      {/* Sticky Bottom Bar for AI Recommendations */}
+      {favorites.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-sm border-t border-gray-700 p-4 z-50">
+          <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <p className="text-purple-400 font-medium">
+                Seen The Dark Knight? Let AI find your next watch.
+              </p>
+              <p className="text-sm text-gray-400">
+                {favorites.length} favorite{favorites.length !== 1 ? 's' : ''} ready for analysis
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {aiRecommendations.length > 0 && (
+                <button
+                  onClick={clearRecommendations}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
+                >
+                  Clear Recommendations
+                </button>
+              )}
+              <button
+                onClick={generateRecommendations}
+                disabled={isGeneratingRecommendations}
+                className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center font-medium text-sm sm:text-base"
+              >
+                {isGeneratingRecommendations ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                    Generating AI Magic...
+                  </>
+                ) : (
+                  <>
+                    <SparklesIcon className="h-5 w-5 mr-2" />
+                    Generate AI Recommendations
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
