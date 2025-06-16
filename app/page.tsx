@@ -409,11 +409,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-2">Search Movies</h1>
-        <p className="text-gray-400 text-center mb-8">Add favourites to get AI recommendations</p>
+      <main className="container mx-auto px-4 py-4">
 
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <p className="text-gray-400 text-center mb-8 mt-4">Add favourites to get AI recommendations</p>
+
         {isSearching ? (
           <section className="mt-8 flex justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
