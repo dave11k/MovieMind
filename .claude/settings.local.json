@@ -12,7 +12,8 @@
       "Bash(npm ls:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(timeout 5s npx jest --detectOpenHandles --forceExit tests/unit/lib/utils.test.ts)"
     ],
     "deny": []
   }

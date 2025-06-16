@@ -82,9 +82,12 @@ export async function POST(request: Request) {
         return acc;
       }, []);
 
-      console.log('Filtered movies for next two years:', uniqueMovies.length);
+      // Shuffle the movies to add randomness to the selection pool
+      const shuffledMovies = uniqueMovies.sort(() => Math.random() - 0.5);
+      
+      console.log('Filtered movies for next two years:', shuffledMovies.length);
 
-      if (uniqueMovies.length === 0) {
+      if (shuffledMovies.length === 0) {
         console.error('No upcoming movies found');
         return NextResponse.json(
           { error: 'No upcoming movies found' },
@@ -92,9 +95,11 @@ export async function POST(request: Request) {
         );
       }
 
-      // Create a structured prompt for the AI
+      // Create a structured prompt for the AI with randomization
       console.log('Creating AI prompt...');
-      const prompt = `As a movie recommendation expert, analyze these favorite movies and upcoming releases to provide personalized recommendations.
+      const randomSeed = Math.floor(Math.random() * 10000);
+      const currentTime = new Date().toISOString();
+      const prompt = `As a movie recommendation expert (Session ID: ${randomSeed}, Time: ${currentTime}), analyze these favorite movies and upcoming releases to provide personalized recommendations.
 
 Favorite Movies:
 ${favorites.map((movie: Movie) => `
@@ -104,7 +109,7 @@ ${favorites.map((movie: Movie) => `
 `).join('\n')}
 
 Upcoming Movies to Consider (IMPORTANT: Only recommend movies from this list):
-${uniqueMovies.map((movie: TMDBMovie) => `
+${shuffledMovies.map((movie: TMDBMovie) => `
 - ID: ${movie.id}
   Title: ${movie.title}
   Release Date: ${movie.release_date}
@@ -118,6 +123,9 @@ Please provide 8 movie recommendations from the upcoming movies list above. For 
 3. Highlight any similarities in genre, style, or themes
 4. Keep the explanation concise (2-3 sentences)
 5. IMPORTANT: Do not recommend the same movie twice
+6. IMPORTANT: Vary your selections - don't always pick the most obvious choices
+7. Consider exploring different genres and styles to provide diverse recommendations
+8. Mix popular and lesser-known upcoming titles for variety
 
 IMPORTANT: 
 - Return ONLY a valid JSON object with this exact structure
@@ -144,15 +152,18 @@ Example format:
         messages: [
           {
             role: "system",
-            content: "You are a movie recommendation expert. Provide personalized movie recommendations based on user preferences and upcoming releases. Return only valid JSON, no markdown or additional text. Make sure to properly escape any special characters in strings."
+            content: "You are a movie recommendation expert. Provide personalized movie recommendations based on user preferences and upcoming releases. Return only valid JSON, no markdown or additional text. Make sure to properly escape any special characters in strings. IMPORTANT: Vary your recommendations each time - don't always pick the same movies."
           },
           {
             role: "user",
             content: prompt
           }
         ],
-        temperature: 0.7,
+        temperature: 0.9,
         max_tokens: 1000,
+        top_p: 0.95,
+        frequency_penalty: 0.5,
+        presence_penalty: 0.3,
       });
       console.log('OpenAI response received');
 
@@ -160,41 +171,89 @@ Example format:
       const aiResponse = completion.choices[0].message.content;
       console.log('Raw AI response:', aiResponse);
       
-      let recommendations: RecommendationsResponse;
+      if (!aiResponse) {
+        throw new Error('Empty response from OpenAI');
+      }
+      
+      let recommendations: RecommendationsResponse = { recommendations: [] };
       try {
         // Clean the response by removing any markdown formatting and extra whitespace
         const cleanedResponse = aiResponse
-          ?.replace(/```json\n?|\n?```/g, '') // Remove markdown code blocks
-          ?.replace(/[\u2018\u2019]/g, "'") // Replace smart quotes with regular quotes
-          ?.replace(/[\u201C\u201D]/g, '"') // Replace smart quotes with regular quotes
-          ?.replace(/\n/g, ' ') // Replace newlines with spaces
-          ?.replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
-          ?.replace(/([{,])\s*([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Ensure property names are quoted
-          ?.trim();
+          .replace(/```json\n?|\n?```/g, '') // Remove markdown code blocks
+          .replace(/[\u2018\u2019]/g, "'") // Replace smart quotes with regular quotes
+          .replace(/[\u201C\u201D]/g, '"') // Replace smart quotes with regular quotes
+          .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
+          .replace(/([{,])\s*([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Ensure property names are quoted
+          .replace(/\*/g, '') // Remove asterisks
+          .replace(/\\"/g, '"') // Fix escaped quotes
+          .replace(/\n\s*/g, ' ') // Remove newlines and extra spaces
+          .trim();
+
+        console.log('Cleaned response:', cleanedResponse);
 
         // Try to find the JSON object in the response
-        const jsonMatch = cleanedResponse?.match(/\{[\s\S]*\}/);
+        const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
+          console.error('No JSON object found in cleaned response:', cleanedResponse);
           throw new Error('No valid JSON object found in response');
         }
+
+        console.log('Extracted JSON:', jsonMatch[0]);
 
         try {
           recommendations = JSON.parse(jsonMatch[0]);
         } catch (parseError) {
           console.error('Initial JSON parse failed:', parseError);
-          // Try to fix common JSON issues
-          const fixedResponse = jsonMatch[0]
-            .replace(/([{,])\s*([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Ensure property names are quoted
-            .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
-            .replace(/([^\\])"/g, '$1\\"') // Escape unescaped quotes
-            .replace(/\\"/g, '"') // Fix double-escaped quotes
-            .replace(/'/g, '"'); // Replace single quotes with double quotes
-
+          console.error('JSON content:', jsonMatch[0]);
+          
+          // Try to fix common JSON issues more carefully
+          let fixedResponse = jsonMatch[0];
+          
+          // Fix unquoted property names
+          fixedResponse = fixedResponse.replace(/([{,])\s*([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+          
+          // Remove trailing commas
+          fixedResponse = fixedResponse.replace(/,(\s*[}\]])/g, '$1');
+          
+          // Replace single quotes with double quotes (but be careful about contractions)
+          fixedResponse = fixedResponse.replace(/(?<!\\)'/g, '"');
+          
+          // Fix any remaining escaped characters
+          fixedResponse = fixedResponse.replace(/\\/g, '\\\\');
+          
+          console.log('Attempting to parse fixed response:', fixedResponse);
+          
           try {
             recommendations = JSON.parse(fixedResponse);
           } catch (secondParseError) {
             console.error('Second JSON parse attempt failed:', secondParseError);
-            throw new Error('Failed to parse AI response after cleanup attempts');
+            console.error('Fixed response content:', fixedResponse);
+            
+            // Last resort: try to manually parse the recommendations array
+            try {
+              const recommendationsMatch = fixedResponse.match(/"recommendations"\s*:\s*\[([\s\S]*)\]/);
+              if (recommendationsMatch) {
+                const recommendationsStr = recommendationsMatch[1];
+                const movieMatches = recommendationsStr.match(/\{[^}]+\}/g);
+                if (movieMatches) {
+                  const parsedMovies = movieMatches.map(movieStr => {
+                    const movieId = movieStr.match(/"movieId"\s*:\s*(\d+)/)?.[1];
+                    const title = movieStr.match(/"title"\s*:\s*"([^"]+)"/)?.[1];
+                    const explanation = movieStr.match(/"explanation"\s*:\s*"([^"]+)"/)?.[1];
+                    return {
+                      movieId: parseInt(movieId || '0'),
+                      title: title || '',
+                      explanation: explanation || ''
+                    };
+                  }).filter(movie => movie.movieId && movie.title && movie.explanation);
+                  
+                  recommendations = { recommendations: parsedMovies };
+                }
+              }
+            } catch (manualParseError) {
+              console.error('Manual parse attempt failed:', manualParseError);
+              throw new Error('Failed to parse AI response after all cleanup attempts');
+            }
           }
         }
 
@@ -238,7 +297,7 @@ Example format:
         recommendations.recommendations.map(async (rec: Recommendation) => {
           try {
             // Validate that the movie exists in our upcoming movies list
-            const validMovie = uniqueMovies.find((movie: TMDBMovie) => movie.id === rec.movieId);
+            const validMovie = shuffledMovies.find((movie: TMDBMovie) => movie.id === rec.movieId);
             if (!validMovie) {
               console.warn(`Movie ID ${rec.movieId} not found in upcoming movies list`);
               return null;

@@ -87,7 +87,7 @@ export default function Home() {
     };
   }, []);
 
-  // Load favorites and AI recommendations
+  // Load favorites and AI recommendations (only on initial load)
   useEffect(() => {
     const loadUserData = async () => {
       if (user) {
@@ -143,6 +143,7 @@ export default function Home() {
           explanation: rec.reason
         }));
 
+        console.log('Loading saved recommendations from DB:', formattedRecommendations.length);
         setAiRecommendations(formattedRecommendations);
       } else {
         // Load from localStorage for anonymous users
@@ -282,6 +283,7 @@ export default function Home() {
         throw new Error(data.error + (data.details ? `: ${data.details}` : ''));
       }
 
+
       // Deduplicate recommendations by movie ID
       const uniqueRecommendations = data.recommendations.reduce((acc: Movie[], current: Movie) => {
         const exists = acc.find(movie => movie.id === current.id);
@@ -325,6 +327,7 @@ export default function Home() {
         localStorage.setItem('aiRecommendations', JSON.stringify(uniqueRecommendations));
       }
 
+      console.log('Setting new AI recommendations:', uniqueRecommendations.length);
       setAiRecommendations(uniqueRecommendations);
     } catch (error: any) {
       console.error('Error generating recommendations:', error);

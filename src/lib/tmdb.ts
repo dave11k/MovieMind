@@ -100,9 +100,28 @@ class TMDBService {
     }
   
     async getUpcomingMovies() {
-      return this.makeRequest('/movie/upcoming', {
-        sort_by: 'release_date.asc'
-      });
+      const allMovies = [];
+      let page = 1;
+      let hasMorePages = true;
+      
+      while (hasMorePages && page <= 8) { // Fetch up to 8 pages (160 movies)
+        const response = await this.makeRequest('/movie/upcoming', {
+          sort_by: 'release_date.asc',
+          page
+        });
+        
+        allMovies.push(...response.results);
+        
+        hasMorePages = page < response.total_pages;
+        page++;
+      }
+      
+      return {
+        results: allMovies,
+        total_pages: Math.ceil(allMovies.length / 20),
+        total_results: allMovies.length,
+        page: 1
+      };
     }
   
     async getPopularMovies(page = 1) {
