@@ -1,3 +1,4 @@
+/* eslint-env jest */
 // Mock Supabase client for testing
 
 const mockSupabaseClient = {
@@ -43,8 +44,8 @@ const mockSupabaseClient = {
   }),
 }
 
-export const createClient = jest.fn().mockReturnValue(mockSupabaseClient)
+const createClient = jest.fn().mockReturnValue(mockSupabaseClient)
 
-export default {
+module.exports = {
   createClient,
 }

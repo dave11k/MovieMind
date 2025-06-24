@@ -12,11 +12,11 @@ export default function Signup() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2 text-white hover:text-purple-400 transition-colors">
             <ArrowLeft className="h-5 w-5" />
-            <span>Back to MovieMind</span>
+            <span>Back to Movie Mind</span>
           </Link>
           <div className="flex items-center space-x-2">
             <FilmIcon className="h-8 w-8 text-purple-500" />
-            <span className="text-xl font-bold">MovieMind</span>
+            <span className="text-xl font-bold">Movie Mind</span>
           </div>
         </div>
       </header>
@@ -25,7 +25,7 @@ export default function Signup() {
       <div className="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="flex flex-col items-center">
-            <h2 className="text-3xl font-bold text-white">Join MovieMind</h2>
+            <h2 className="text-3xl font-bold text-white">Join Movie Mind</h2>
             <p className="mt-2 text-sm text-gray-400">
               Create an account to sync your favorites across devices
             </p>

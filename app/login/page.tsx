@@ -12,11 +12,11 @@ export default function Login() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2 text-white hover:text-purple-400 transition-colors">
             <ArrowLeft className="h-5 w-5" />
-            <span>Back to MovieMind</span>
+            <span>Back to Movie Mind</span>
           </Link>
           <div className="flex items-center space-x-2">
             <FilmIcon className="h-8 w-8 text-purple-500" />
-            <span className="text-xl font-bold">MovieMind</span>
+            <span className="text-xl font-bold">Movie Mind</span>
           </div>
         </div>
       </header>

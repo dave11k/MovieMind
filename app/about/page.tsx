@@ -16,7 +16,7 @@ export default function About() {
           className="inline-flex items-center space-x-2 text-purple-400 hover:text-purple-300 transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to MovieMind</span>
+          <span>Back to Movie Mind</span>
         </Link>
 
         {/* Hero Section */}
@@ -25,7 +25,7 @@ export default function About() {
           <div className="flex flex-col items-center space-y-3 sm:hidden mb-6">
             <div className="flex items-center space-x-2">
               <FilmIcon className="h-8 w-8 text-purple-500" />
-              <h1 className="text-2xl font-bold">About MovieMind</h1>
+              <h1 className="text-2xl font-bold">About Movie Mind</h1>
             </div>
             <div className="flex items-center bg-purple-900/50 rounded-full px-3 py-1">
               <SparklesIcon className="h-4 w-4 text-purple-400 mr-1" />
@@ -36,7 +36,7 @@ export default function About() {
           {/* Desktop layout - horizontal */}
           <div className="hidden sm:flex justify-center items-center space-x-3 mb-6">
             <FilmIcon className="h-10 w-10 lg:h-12 lg:w-12 text-purple-500" />
-            <h1 className="text-3xl lg:text-4xl font-bold">About MovieMind</h1>
+            <h1 className="text-3xl lg:text-4xl font-bold">About Movie Mind</h1>
             <div className="flex items-center bg-purple-900/50 rounded-full px-3 py-1">
               <SparklesIcon className="h-5 w-5 text-purple-400 mr-1" />
               <span className="text-purple-300 text-sm">AI Powered</span>
@@ -96,7 +96,7 @@ export default function About() {
 
         {/* Features Section */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-center">Why MovieMind?</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">Why Movie Mind?</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-gray-800/50 rounded-lg p-4">
               <h4 className="font-semibold mb-2 text-purple-400">Smart Recommendations</h4>

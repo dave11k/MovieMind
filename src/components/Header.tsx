@@ -38,7 +38,7 @@ export const Header = () => {
           {/* Logo section - responsive sizing */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <FilmIcon className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
-            <h1 className="text-lg sm:text-2xl font-bold">MovieMind</h1>
+            <h1 className="text-lg sm:text-2xl font-bold">Movie Mind</h1>
             <div className="flex items-center bg-purple-900/50 rounded-full px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm">
               <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 text-purple-400 mr-1" />
               <span className="text-purple-300">AI Powered</span>

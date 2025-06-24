@@ -128,11 +128,7 @@ export const handlers = [
   }),
 
   // TMDB Discover Movies (Upcoming)
-  http.get(`${TMDB_BASE_URL}/discover/movie`, ({ request }) => {
-    const url = new URL(request.url)
-    const primaryReleaseYear = url.searchParams.get('primary_release_year')
-    const sortBy = url.searchParams.get('sort_by')
-
+  http.get(`${TMDB_BASE_URL}/discover/movie`, () => {
     // Return upcoming movies
     return HttpResponse.json({
       page: 1,

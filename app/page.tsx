@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { SparklesIcon, SearchIcon } from 'lucide-react';
 import { Header } from '../src/components/Header';
 import { SearchBar } from '../src/components/SearchBar';
@@ -9,7 +9,7 @@ import { MovieList } from '../src/components/MovieList';
 import { FavoritesList } from '../src/components/FavoritesList';
 import { RecommendationsList } from '../src/components/RecommendationsList';
 import { Movie } from '../src/types/Movie';
-import { tmdbAPI, genreMap, getMovieDetails } from '../src/lib/tmdb';
+import { tmdbAPI, genreMap } from '../src/lib/tmdb';
 import { supabase } from '../src/lib/supabase';
 import debounce from 'lodash/debounce';
 
@@ -17,7 +17,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [favorites, setFavorites] = useState<Movie[]>([]);
-  const [recommendations] = useState<Movie[]>([]);
   const [aiRecommendations, setAiRecommendations] = useState<Movie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
@@ -164,8 +163,8 @@ export default function Home() {
   }, [user]);
 
   // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce(async (query: string) => {
+  const debouncedSearch = React.useMemo(
+    () => debounce(async (query: string) => {
       if (query.trim() === '') {
         setSearchResults([]);
         setIsSearching(false);
