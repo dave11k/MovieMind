@@ -115,7 +115,7 @@ export const handlers = [
   // TMDB Movie Details
   http.get(`${TMDB_BASE_URL}/movie/:id`, ({ params }) => {
     const movieId = params.id as string
-    const movie = mockMovieDetails[movieId as keyof typeof mockMovieDetails]
+    const movie = mockMovieDetails[movieId as unknown as keyof typeof mockMovieDetails]
 
     if (!movie) {
       return HttpResponse.json(

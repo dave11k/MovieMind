@@ -56,7 +56,10 @@ describe('Recommendation Service Integration', () => {
           genre_ids: [28, 12],
           genre_names: { 28: 'Action', 12: 'Adventure' }
         }
-      ]
+      ],
+      total_pages: 1,
+      total_results: 2,
+      page: 1
     }
 
     const mockMovieDetails = {
@@ -198,7 +201,12 @@ Return JSON with recommendations array.`
   })
 
   it('should handle OpenAI API failures gracefully', async () => {
-    mockTMDB.getUpcomingMovies.mockResolvedValue({ results: [] })
+    mockTMDB.getUpcomingMovies.mockResolvedValue({ 
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+      page: 1
+    })
     
     mockOpenAI.chat = {
       completions: {
@@ -250,7 +258,10 @@ Return JSON with recommendations array.`
           vote_average: 8.0,
           genre_ids: [18]
         }
-      ]
+      ],
+      total_pages: 1,
+      total_results: 3,
+      page: 1
     }
 
     mockTMDB.getUpcomingMovies.mockResolvedValue(mockUpcomingMovies)
